@@ -1,0 +1,34 @@
+import Product from "../models/Product.mjs";
+
+
+
+export const getMostWantedProducts = async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 4;
+
+        const products = await Product.find();
+
+        const scoredProducts = products.map(product => {
+            const orderCount = product.orderCount || 0;
+            const addedToCartCount = product.addedToCartCount || 0;
+            const wishlistCount = product.wishlistCount || 0;
+            const viewsCount = product.viewsCount || 0;
+
+            const score = (orderCount * 3) +
+                (addedToCartCount * 2) +
+                (wishlistCount * 1) +
+                (viewsCount * 0.5);
+
+            return { ...product.toObject(), mostWantedScore: score };
+        });
+
+        const sorted = scoredProducts
+            .sort((a, b) => b.mostWantedScore - a.mostWantedScore)
+            .slice(0, limit);
+
+        res.status(200).json(sorted);
+    } catch (error) {
+        console.error('Error fetching most wanted products:', error);
+        res.status(500).json({ message: 'Server error fetching most wanted products' });
+    }
+};
