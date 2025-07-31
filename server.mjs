@@ -24,6 +24,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use(morgan('dev'))
 app.use(cookieParser())
 
+app.use('/', (req, res) => res.json('Hello world'))
 
 app.use('/upload', uploadRouter)
 
