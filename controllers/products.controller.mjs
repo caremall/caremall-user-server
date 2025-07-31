@@ -32,3 +32,18 @@ export const getMostWantedProducts = async (req, res) => {
         res.status(500).json({ message: 'Server error fetching most wanted products' });
     }
 };
+
+export const getNewArrivalProducts = async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 4;
+
+        const products = await Product.find()
+            .sort({ createdAt: -1 })
+            .limit(limit);
+
+        res.status(200).json(products);
+    } catch (error) {
+        console.error('Error fetching new arrivals:', error);
+        res.status(500).json({ message: 'Server error fetching new arrival products' });
+    }
+};
