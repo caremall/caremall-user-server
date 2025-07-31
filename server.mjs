@@ -10,6 +10,8 @@ import cookieParser from 'cookie-parser';
 
 import uploadRouter from './routers/upload.router.mjs'
 import brandRouter from './routers/brands.router.mjs'
+import categoriesRouter from './routers/categories.router.mjs'
+
 
 const app = express();
 
@@ -27,6 +29,9 @@ app.use(cookieParser())
 
 app.use('/upload', uploadRouter)
 app.use('/brands', brandRouter)
+app.use('/categories', categoriesRouter)
+
+
 app.use('/', (req, res) => res.json('Hello world'))
 
 
