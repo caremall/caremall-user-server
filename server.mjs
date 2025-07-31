@@ -24,10 +24,10 @@ app.use(express.urlencoded({ extended: false }))
 app.use(morgan('dev'))
 app.use(cookieParser())
 
-app.use('/', (req, res) => res.json('Hello world'))
 
 app.use('/upload', uploadRouter)
 app.use('/brands', brandRouter)
+app.use('/', (req, res) => res.json('Hello world'))
 
 
 mongoose.connection.once('open', () => {
