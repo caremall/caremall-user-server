@@ -21,7 +21,7 @@ const orderSchema = new Schema(
                 variant: {
                     type: Schema.Types.ObjectId,
                     ref: 'Variant',
-                    required: true,
+                    default: null,
                 },
 
                 quantity: {
