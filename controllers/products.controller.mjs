@@ -1,4 +1,5 @@
 import Product from "../models/Product.mjs";
+import { enrichProductsWithDefaultVariants } from "../utils/enrichedProducts.mjs";
 
 
 
@@ -7,8 +8,9 @@ export const getMostWantedProducts = async (req, res) => {
         const limit = parseInt(req.query.limit) || 4;
 
         const products = await Product.find();
+        const enrichedProducts = await enrichProductsWithDefaultVariants(products)
 
-        const scoredProducts = products.map(product => {
+        const scoredProducts = enrichedProducts.map(product => {
             const orderCount = product.orderCount || 0;
             const addedToCartCount = product.addedToCartCount || 0;
             const wishlistCount = product.wishlistCount || 0;
@@ -40,8 +42,9 @@ export const getNewArrivalProducts = async (req, res) => {
         const products = await Product.find()
             .sort({ createdAt: -1 })
             .limit(limit);
+        const enrichedProducts = await enrichProductsWithDefaultVariants(products)
 
-        res.status(200).json(products);
+        res.status(200).json(enrichedProducts);
     } catch (error) {
         console.error('Error fetching new arrivals:', error);
         res.status(500).json({ message: 'Server error fetching new arrival products' });
