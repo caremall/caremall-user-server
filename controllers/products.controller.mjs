@@ -50,3 +50,20 @@ export const getNewArrivalProducts = async (req, res) => {
         res.status(500).json({ message: 'Server error fetching new arrival products' });
     }
 };
+
+export const getBestSellingProducts = async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 4;
+
+        const bestSellers = await Product.find()
+            .sort({ orderCount: -1 })
+            .limit(limit)
+            .lean();
+        const products = await enrichProductsWithDefaultVariants(bestSellers)
+
+        res.status(200).json(products);
+    } catch (error) {
+        console.error('Error fetching best sellers:', error);
+        res.status(500).json({ message: 'Server error fetching best sellers' });
+    }
+};
