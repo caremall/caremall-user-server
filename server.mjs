@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser';
 
 
 import uploadRouter from './routers/upload.router.mjs'
-
+import brandRouter from './routers/brands.router.mjs'
 
 const app = express();
 
@@ -27,7 +27,7 @@ app.use(cookieParser())
 app.use('/', (req, res) => res.json('Hello world'))
 
 app.use('/upload', uploadRouter)
-
+app.use('/brands', brandRouter)
 
 
 mongoose.connection.once('open', () => {
