@@ -6,7 +6,7 @@ const router = Router()
 router.get('/most-wanted', getMostWantedProducts)
 router.get('/new-arrivals', getNewArrivalProducts)
 router.get('/best-sellers', getBestSellingProducts)
-router.get('/:id', getProductById)
+router.get('/:slug', getProductById)
 
 
 export default router
