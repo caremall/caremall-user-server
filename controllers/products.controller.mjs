@@ -7,10 +7,11 @@ export const getMostWantedProducts = async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 4;
 
-        const products = await Product.find();
+        const products = await Product.find().lean();
         const enrichedProducts = await enrichProductsWithDefaultVariants(products)
 
         const scoredProducts = enrichedProducts.map(product => {
+
             const orderCount = product.orderCount || 0;
             const addedToCartCount = product.addedToCartCount || 0;
             const wishlistCount = product.wishlistCount || 0;
@@ -21,7 +22,7 @@ export const getMostWantedProducts = async (req, res) => {
                 (wishlistCount * 1) +
                 (viewsCount * 0.5);
 
-            return { ...product.toObject(), mostWantedScore: score };
+            return { ...product, mostWantedScore: score };
         });
 
         const sorted = scoredProducts
@@ -41,7 +42,8 @@ export const getNewArrivalProducts = async (req, res) => {
 
         const products = await Product.find()
             .sort({ createdAt: -1 })
-            .limit(limit);
+            .limit(limit)
+            .lean();
         const enrichedProducts = await enrichProductsWithDefaultVariants(products)
 
         res.status(200).json(enrichedProducts);
