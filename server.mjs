@@ -15,6 +15,7 @@ import brandRouter from './routers/brands.router.mjs'
 import categoriesRouter from './routers/categories.router.mjs'
 import productsRouter from './routers/products.router.mjs'
 import reviewsRouter from './routers/reviews.router.mjs'
+import cartRouter from './routers/cart.router.mjs'
 
 
 const app = express();
@@ -34,6 +35,7 @@ app.use(cookieParser())
 app.use('/auth', authRouter)
 app.use('/upload', uploadRouter)
 app.use('/products', productsRouter)
+app.use('/cart', cartRouter)
 app.use('/orders', ordersRouter)
 app.use('/brands', brandRouter)
 app.use('/categories', categoriesRouter)
