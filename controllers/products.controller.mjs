@@ -72,7 +72,7 @@ export const getBestSellingProducts = async (req, res) => {
 
 export const getProductById = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id)
+        const product = await Product.findOne({ urlSlug: req.params.slug })
         if (!product) return res.status(200).json({ message: 'Product not found' })
         res.status(200).json(product)
     } catch (error) {
