@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 
 
 import authRouter from './routers/auth.router.mjs'
+import ordersRouter from './routers/orders.router.mjs'
 import uploadRouter from './routers/upload.router.mjs'
 import brandRouter from './routers/brands.router.mjs'
 import categoriesRouter from './routers/categories.router.mjs'
@@ -33,6 +34,7 @@ app.use(cookieParser())
 app.use('/auth', authRouter)
 app.use('/upload', uploadRouter)
 app.use('/products', productsRouter)
+app.use('/orders', ordersRouter)
 app.use('/brands', brandRouter)
 app.use('/categories', categoriesRouter)
 app.use('/reviews', reviewsRouter)
