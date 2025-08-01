@@ -2,16 +2,16 @@ import Review from "../models/Review.mjs";
 
 export const createReview = async (req, res) => {
     try {
-        const { userId, productId, rating, comment, images } = req.body;
-
-        const existingReview = await Review.findOne({ product, user });
+        const { productId, rating, comment, images } = req.body;
+        const { _id } = req.user
+        const existingReview = await Review.findOne({ productId, _id });
         if (existingReview) {
             return res.status(400).json({ message: 'You have already reviewed this product.' });
         }
 
         const review = await Review.create({
             productId,
-            userId,
+            userId: _id,
             rating,
             comment,
             images,
@@ -23,6 +23,7 @@ export const createReview = async (req, res) => {
         res.status(500).json({ message: 'Failed to create review' });
     }
 };
+
 
 export const getAllReviews = async (req, res) => {
     try {
@@ -63,12 +64,12 @@ export const getReviewById = async (req, res) => {
 
 export const updateReview = async (req, res) => {
     try {
-        const { userId, rating, comment, images, status } = req.body;
-
+        const { rating, comment, images, status } = req.body;
+        const { _id } = req.user
         const review = await Review.findById(req.params.id);
         if (!review) return res.status(404).json({ message: 'Review not found' });
 
-        if (review.user.toString() !== userId.toString()) {
+        if (review.userId.toString() !== _id.toString()) {
             return res.status(403).json({ message: 'Unauthorized to update this review' });
         }
 
@@ -89,7 +90,12 @@ export const updateReview = async (req, res) => {
 export const deleteReview = async (req, res) => {
     try {
         const review = await Review.findById(req.params.id);
+        const { _id } = req.user
         if (!review) return res.status(404).json({ message: 'Review not found' });
+
+        if (review.userId.toString() !== _id.toString()) {
+            return res.status(403).json({ message: 'Unauthorized to delete this review' });
+        }
 
         await review.remove();
         res.status(200).json({ message: 'Review deleted', success: true });
