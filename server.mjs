@@ -12,7 +12,7 @@ import uploadRouter from './routers/upload.router.mjs'
 import brandRouter from './routers/brands.router.mjs'
 import categoriesRouter from './routers/categories.router.mjs'
 import productsRouter from './routers/products.router.mjs'
-
+import reviewsRouter from './routers/reviews.router.mjs'
 
 
 const app = express();
@@ -33,7 +33,7 @@ app.use('/upload', uploadRouter)
 app.use('/products', productsRouter)
 app.use('/brands', brandRouter)
 app.use('/categories', categoriesRouter)
-
+app.use('/reviews', reviewsRouter)
 
 app.use('/', (req, res) => res.json('Hello world'))
 
