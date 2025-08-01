@@ -7,6 +7,10 @@ const categorySchema = new mongoose.Schema(
             enum: ['Main', 'Sub'],
             required: true,
         },
+        image: {
+            type: String,
+            required: true
+        },
         name: {
             type: String,
             required: true,
@@ -20,7 +24,7 @@ const categorySchema = new mongoose.Schema(
         parentId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Category',
-            default: null,
+            default: undefined,
         },
         categoryCode: {
             type: String,
