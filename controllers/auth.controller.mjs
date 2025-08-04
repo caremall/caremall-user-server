@@ -27,7 +27,7 @@ export const signup = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
-        res.status(201).json({ accessToken, user })
+        res.status(201).json({ accessToken, user, message: 'Signed up successfully' })
     } catch (err) {
         console.log(err)
         res.status(500).json({ message: 'Server error' })
@@ -54,17 +54,17 @@ export const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
-        res.status(200).json({ accessToken, user });
+        res.status(200).json({ accessToken, user, message: 'Logged in successfully' })
     } catch (err) {
         console.log(err)
-        res.status(500).json({ message: 'Login failed' });
+        res.status(500).json({ message: 'Login failed' })
     }
 };
 
 
 export const refreshAccessToken = async (req, res) => {
     const token = req.cookies.refreshToken;
-    if (!token) return res.status(401).json({ message: 'No refresh token' });
+    if (!token) return res.status(401).json({ message: 'No refresh token' })
 
     try {
         const { userId } = verifyRefreshToken(token);
@@ -72,11 +72,11 @@ export const refreshAccessToken = async (req, res) => {
         res.json({ accessToken: newAccessToken });
     } catch (err) {
         console.log(err)
-        res.status(403).json({ message: 'Invalid or expired refresh token' });
+        res.status(403).json({ message: 'Invalid or expired refresh token' })
     }
 };
 
 export const logout = (req, res) => {
     res.clearCookie('refreshToken');
-    res.json({ message: 'Logged out successfully' });
+    res.json({ message: 'Logged out successfully' })
 };
