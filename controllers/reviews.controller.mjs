@@ -34,8 +34,8 @@ export const getAllReviews = async (req, res) => {
         if (userId) filter.user = userId;
 
         const reviews = await Review.find(filter)
-            .populate('user', 'name email')
-            .populate('product', 'productName')
+            .populate('userId', 'name email')
+            .populate('productId', 'productName')
             .sort({ createdAt: -1 });
 
         res.status(200).json(reviews);
