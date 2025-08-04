@@ -10,7 +10,7 @@ export const signup = async (req, res) => {
     const { name, email, password, phone } = req.body;
 
     try {
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ email })
         if (userExists) return res.status(200).json({ message: 'User already exists' })
 
         const mobileNumberExists = await User.findOne({ phone: phone })
@@ -27,9 +27,10 @@ export const signup = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
-        res.status(201).json({ accessToken, user });
+        res.status(201).json({ accessToken, user })
     } catch (err) {
-        res.status(500).json({ message: 'Server error' });
+        console.log(err)
+        res.status(500).json({ message: 'Server error' })
     }
 };
 
@@ -55,6 +56,7 @@ export const login = async (req, res) => {
 
         res.status(200).json({ accessToken, user });
     } catch (err) {
+        console.log(err)
         res.status(500).json({ message: 'Login failed' });
     }
 };
@@ -69,6 +71,7 @@ export const refreshAccessToken = async (req, res) => {
         const newAccessToken = generateAccessToken(userId);
         res.json({ accessToken: newAccessToken });
     } catch (err) {
+        console.log(err)
         res.status(403).json({ message: 'Invalid or expired refresh token' });
     }
 };
