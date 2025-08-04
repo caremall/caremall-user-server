@@ -1,4 +1,5 @@
 import Product from "../models/Product.mjs";
+import Variant from "../models/Variant.mjs";
 import { enrichProductsWithDefaultVariants } from "../utils/enrichedProducts.mjs";
 
 
@@ -74,7 +75,13 @@ export const getProductById = async (req, res) => {
     try {
         const product = await Product.findOne({ urlSlug: req.params.slug })
         if (!product) return res.status(200).json({ message: 'Product not found' })
-        res.status(200).json(product)
+
+        let variants = []
+        if (product.hasVariant) {
+            variants = await Variant.find({ productId: product._id })
+        }
+        res.status(200).json({ ...product, variants })
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Server error fetching best sellers' });
