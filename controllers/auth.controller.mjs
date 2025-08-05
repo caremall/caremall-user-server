@@ -40,7 +40,7 @@ export const login = async (req, res) => {
     if (!email || !password) return res.json({ message: 'Email and Password is required' })
 
     try {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email }).select('+password');
         if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
@@ -55,7 +55,13 @@ export const login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
-        res.status(200).json({ accessToken, user, message: 'Logged in successfully' })
+        res.status(200).json({
+            accessToken,
+            user: {
+                ...user, password: null
+            },
+            message: 'Logged in successfully'
+        })
     } catch (err) {
         console.log(err)
         res.status(500).json({ message: 'Login failed' })
