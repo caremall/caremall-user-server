@@ -73,12 +73,12 @@ export const getBestSellingProducts = async (req, res) => {
 
 export const getProductById = async (req, res) => {
     try {
-        const product = await Product.findOne({ urlSlug: req.params.slug })
+        const product = await Product.findOne({ urlSlug: req.params.slug }).lean()
         if (!product) return res.status(200).json({ message: 'Product not found' })
 
         let variants = []
         if (product.hasVariant) {
-            variants = await Variant.find({ productId: product._id })
+            variants = await Variant.find({ productId: product._id }).lean()
         }
         res.status(200).json({ ...product, variants })
 
