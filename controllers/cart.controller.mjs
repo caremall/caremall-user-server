@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Cart from '../models/Cart.mjs';
 import Product from '../models/Product.mjs';
 import Variant from '../models/Variant.mjs';
@@ -13,6 +14,16 @@ export const addToCart = async (req, res) => {
 
         if (!productId || !quantity) {
             return res.status(400).json({ message: 'Product and quantity are required.' });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+            return res.status(400).json({ message: 'Invalid product ID' });
+        }
+
+        const parsedVariantId = variantId && variantId !== '' ? variantId : null;
+
+        if (parsedVariantId && !mongoose.Types.ObjectId.isValid(parsedVariantId)) {
+            return res.status(400).json({ message: 'Invalid variant ID' });
         }
 
         const product = await Product.findById(productId);
@@ -49,7 +60,6 @@ export const addToCart = async (req, res) => {
                 cart.items.push({ product: productId, variant: variantId, quantity, priceAtCart: price, totalPrice: itemTotal });
             }
             cart.cartTotal = calculateCartTotal(cart.items);
-            cart.updatedAt = new Date();
             await cart.save();
         }
 
