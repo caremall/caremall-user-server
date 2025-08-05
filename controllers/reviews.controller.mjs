@@ -64,7 +64,7 @@ export const getReviewById = async (req, res) => {
 
 export const updateReview = async (req, res) => {
     try {
-        const { rating, comment, images, status } = req.body;
+        const { rating, comment, images } = req.body;
         const { _id } = req.user
         const review = await Review.findById(req.params.id);
         if (!review) return res.status(404).json({ message: 'Review not found' });
@@ -76,7 +76,6 @@ export const updateReview = async (req, res) => {
         review.rating = rating ?? review.rating;
         review.comment = comment ?? review.comment;
         review.images = images ?? review.images;
-        review.status = status ?? review.status;
 
         await review.save();
         res.status(200).json({ message: 'Review updated', success: true, review });
@@ -97,7 +96,7 @@ export const deleteReview = async (req, res) => {
             return res.status(403).json({ message: 'Unauthorized to delete this review' });
         }
 
-        await review.remove();
+        await Review.findByIdAndDelete(review._id)
         res.status(200).json({ message: 'Review deleted', success: true });
     } catch (error) {
         console.error('Delete Review Error:', error);
