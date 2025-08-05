@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { set } from 'mongoose';
 
 const { Schema, model } = mongoose;
 
@@ -12,6 +12,7 @@ const cartItemSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Variant',
         default: null,
+        set: v => (v === '' ? null : v)
     },
     quantity: {
         type: Number,
