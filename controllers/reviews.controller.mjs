@@ -4,7 +4,7 @@ export const createReview = async (req, res) => {
     try {
         const { productId, rating, comment, images } = req.body;
         const { _id } = req.user
-        const existingReview = await Review.findOne({ productId, _id });
+        const existingReview = await Review.findOne({ productId, userId: _id });
         if (existingReview) {
             return res.status(400).json({ message: 'You have already reviewed this product.' });
         }
