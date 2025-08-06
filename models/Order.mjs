@@ -52,7 +52,16 @@ const orderSchema = new Schema(
             postalCode: String,
             country: String,
         },
-
+        billingAddress: {
+            fullName: String,
+            phone: String,
+            addressLine1: String,
+            addressLine2: String,
+            city: String,
+            state: String,
+            postalCode: String,
+            country: String,
+        },
         paymentMethod: {
             type: String,
             enum: ['cod', 'card', 'upi', 'paypal'],

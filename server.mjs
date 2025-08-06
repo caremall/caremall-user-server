@@ -47,7 +47,7 @@ app.use('/categories', categoriesRouter)
 app.use('/reviews', reviewsRouter)
 
 
-app.use('/', (req, res) => res.json('Hello world'))
+app.use('/', (req, res) => res.json('This api is not avialable right now'))
 
 
 mongoose.connection.once('open', () => {
