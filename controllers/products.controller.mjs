@@ -79,7 +79,7 @@ export const getFilteredProducts = async (req, res) => {
         // Step 4: Fetch filtered products with pagination
         const [products, totalCount] = await Promise.all([
             Product.find(productMatch)
-                .populate('brand category productType')
+                .populate('brand category')
                 .skip(skip)
                 .limit(parseInt(limit))
                 .lean(),
