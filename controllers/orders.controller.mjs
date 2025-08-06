@@ -22,12 +22,13 @@ export const createOrder = async (req, res) => {
         }));
 
         const order = await Order.create({
+            ...req.body,
             user: req.user._id,
             items: formattedItems,
             shippingAddress,
             paymentMethod,
             paymentStatus: 'pending',
-            totalAmount,
+            totalAmount
         });
 
         res.status(201).json({ success: true, order });
