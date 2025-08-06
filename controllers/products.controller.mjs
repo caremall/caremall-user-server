@@ -1,7 +1,119 @@
+import mongoose from "mongoose";
 import Product from "../models/Product.mjs";
 import Variant from "../models/Variant.mjs";
 import { enrichProductsWithDefaultVariants } from "../utils/enrichedProducts.mjs";
 
+export const getFilteredProducts = async (req, res) => {
+    try {
+        const {
+            page = 1,
+            limit = 10,
+            category,
+            brand,
+            tags,
+            search,
+            color,
+            size,
+            minPrice,
+            maxPrice,
+        } = req.query;
+
+        const skip = (page - 1) * limit;
+
+        // Step 1: Build variant filter
+        const variantMatch = {};
+
+        const variantFilters = [];
+        if (color) variantFilters.push({ name: 'color', value: color });
+        if (size) variantFilters.push({ name: 'size', value: size });
+
+        if (variantFilters.length) {
+            variantMatch.variantAttributes = {
+                $all: variantFilters.map(attr => ({
+                    $elemMatch: attr,
+                })),
+            };
+        }
+
+        if (minPrice || maxPrice) {
+            const priceFilter = {};
+            if (minPrice) priceFilter.$gte = parseFloat(minPrice);
+            if (maxPrice) priceFilter.$lte = parseFloat(maxPrice);
+            variantMatch.sellingPrice = priceFilter;
+        }
+
+        // Step 2: Find matching variant productIds
+        const matchedVariants = await Variant.find(variantMatch).select('productId').lean();
+        const matchingProductIds = [...new Set(matchedVariants.map(v => v.productId.toString()))];
+
+        // Step 3: Build product filter
+        const productMatch = {
+            productStatus: 'published',
+            visibility: 'visible',
+        };
+
+        if (category) productMatch.category = new mongoose.Types.ObjectId(category);
+        if (brand) productMatch.brand = new mongoose.Types.ObjectId(brand);
+        if (tags) productMatch.tags = { $in: tags.split(',') };
+        if (search) {
+            const regex = new RegExp(search, 'i');
+            productMatch.$or = [
+                { productName: regex },
+                { shortDescription: regex },
+                { productDescription: regex },
+            ];
+        }
+
+        if (matchingProductIds.length) {
+            productMatch._id = { $in: matchingProductIds };
+        } else if (variantFilters.length || minPrice || maxPrice) {
+            // If variant filters applied but no match, return empty
+            return res.status(200).json({
+                data: [],
+                totalCount: 0,
+                totalPages: 0,
+                currentPage: Number(page),
+            });
+        }
+
+        // Step 4: Fetch filtered products with pagination
+        const [products, totalCount] = await Promise.all([
+            Product.find(productMatch)
+                .populate('brand category productType')
+                .skip(skip)
+                .limit(parseInt(limit))
+                .lean(),
+            Product.countDocuments(productMatch),
+        ]);
+
+        // Step 5: Enrich with matching variants for each product
+        const enrichedProducts = await Promise.all(
+            products.map(async product => {
+                const variants = await Variant.find({
+                    productId: product._id,
+                    ...(variantFilters.length || minPrice || maxPrice ? variantMatch : {}),
+                }).lean();
+
+                return {
+                    ...product,
+                    variants,
+                };
+            })
+        );
+
+        const totalPages = Math.ceil(totalCount / limit);
+
+        res.status(200).json({
+            data: enrichedProducts,
+            totalCount,
+            totalPages,
+            currentPage: Number(page),
+        });
+    } catch (error) {
+        console.error('Error filtering products:', error);
+        res.status(500).json({ message: 'Server error while filtering products' });
+    }
+};
 
 
 export const getMostWantedProducts = async (req, res) => {
